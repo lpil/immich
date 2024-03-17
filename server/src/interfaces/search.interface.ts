@@ -114,7 +114,7 @@ export interface SearchPeopleOptions {
 }
 
 export interface SearchOrderOptions {
-  orderDirection?: 'ASC' | 'DESC';
+  orderDirection?: 'asc' | 'desc';
 }
 
 export interface SearchPaginationOptions {
@@ -148,13 +148,13 @@ export type SmartSearchOptions = SearchDateOptions &
 export interface FaceEmbeddingSearch extends SearchEmbeddingOptions {
   hasPerson?: boolean;
   numResults: number;
-  maxDistance?: number;
+  maxDistance: number;
 }
 
 export interface AssetDuplicateSearch {
   assetId: string;
   embedding: number[];
-  maxDistance?: number;
+  maxDistance: number;
   type: AssetType;
   userIds: string[];
 }

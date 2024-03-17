@@ -130,8 +130,8 @@ export class AssetStatsResponseDto {
 
 export const mapStats = (stats: AssetStats): AssetStatsResponseDto => {
   return {
-    images: stats[AssetType.IMAGE],
-    videos: stats[AssetType.VIDEO],
-    total: Object.values(stats).reduce((total, value) => total + value, 0),
+    images: Number(stats[AssetType.IMAGE]),
+    videos: Number(stats[AssetType.VIDEO]),
+    total: Object.values(stats).map(Number).reduce((total, value) => total + value, 0),
   };
 };

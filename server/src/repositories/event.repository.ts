@@ -86,7 +86,7 @@ export class EventRepository implements OnGatewayConnection, OnGatewayDisconnect
       this.emitHandlers[event] = [];
     }
 
-    this.emitHandlers[event].push(handler);
+    this.emitHandlers[event]!.push(handler);
   }
 
   async emit<T extends EmitEvent>(event: T, ...args: ArgsOf<T>): Promise<void> {

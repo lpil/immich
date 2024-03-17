@@ -72,26 +72,11 @@ export class AssetService {
     const userIds = [auth.user.id, ...partnerIds];
 
     const assets = await this.assetRepository.getByDayOfYear(userIds, dto);
-    const groups: Record<number, AssetEntity[]> = {};
-    const currentYear = new Date().getFullYear();
-    for (const asset of assets) {
-      const yearsAgo = currentYear - asset.localDateTime.getFullYear();
-      if (!groups[yearsAgo]) {
-        groups[yearsAgo] = [];
-      }
-      groups[yearsAgo].push(asset);
-    }
-
-    return Object.keys(groups)
-      .map(Number)
-      .sort((a, b) => a - b)
-      .filter((yearsAgo) => yearsAgo > 0)
-      .map((yearsAgo) => ({
-        yearsAgo,
-        // TODO move this to clients
-        title: `${yearsAgo} year${yearsAgo > 1 ? 's' : ''} ago`,
-        assets: groups[yearsAgo].map((asset) => mapAsset(asset, { auth })),
-      }));
+    return assets.map(({ yearsAgo, assets }) => ({
+      yearsAgo,
+      title: `${yearsAgo} year${yearsAgo > 1 ? 's' : ''} ago`,
+      assets: assets.map((a) => mapAsset(a, { auth })),
+    }));
   }
 
   async getStatistics(auth: AuthDto, dto: AssetStatsDto) {
@@ -111,29 +96,12 @@ export class AssetService {
   async get(auth: AuthDto, id: string): Promise<AssetResponseDto | SanitizedAssetResponseDto> {
     await this.access.requirePermission(auth, Permission.ASSET_READ, id);
 
-    const asset = await this.assetRepository.getById(
-      id,
-      {
-        exifInfo: true,
-        tags: true,
-        sharedLinks: true,
-        smartInfo: true,
-        owner: true,
-        faces: {
-          person: true,
-        },
-        stack: {
-          assets: {
-            exifInfo: true,
-          },
-        },
-      },
-      {
-        faces: {
-          boundingBoxX1: 'ASC',
-        },
-      },
-    );
+    const asset = await this.assetRepository.getById(id, {
+      exifInfo: true,
+      owner: true,
+      faces: { person: true },
+      stack: { assets: true },
+    });
 
     if (!asset) {
       throw new BadRequestException('Asset not found');
@@ -162,16 +130,7 @@ export class AssetService {
     const { description, dateTimeOriginal, latitude, longitude, rating, ...rest } = dto;
     await this.updateMetadata({ id, description, dateTimeOriginal, latitude, longitude, rating });
 
-    await this.assetRepository.update({ id, ...rest });
-    const asset = await this.assetRepository.getById(id, {
-      exifInfo: true,
-      owner: true,
-      smartInfo: true,
-      tags: true,
-      faces: {
-        person: true,
-      },
-    });
+    const asset = await this.assetRepository.update({ id, ...rest });
     if (!asset) {
       throw new BadRequestException('Asset not found');
     }
@@ -186,7 +145,7 @@ export class AssetService {
     const stackIdsToCheckForDelete: string[] = [];
     if (removeParent) {
       (options as Partial<AssetEntity>).stack = null;
-      const assets = await this.assetRepository.getByIds(ids, { stack: true });
+      const assets = await this.assetRepository.getByIds(ids, { stack: { assets: false } });
       stackIdsToCheckForDelete.push(...new Set(assets.filter((a) => !!a.stackId).map((a) => a.stackId!)));
       // This updates the updatedAt column of the parents to indicate that one of its children is removed
       // All the unique parent's -> parent is set to null
@@ -197,7 +156,9 @@ export class AssetService {
     } else if (options.stackParentId) {
       //Creating new stack if parent doesn't have one already. If it does, then we add to the existing stack
       await this.access.requirePermission(auth, Permission.ASSET_UPDATE, options.stackParentId);
-      const primaryAsset = await this.assetRepository.getById(options.stackParentId, { stack: { assets: true } });
+      const primaryAsset = await this.assetRepository.getById(options.stackParentId, {
+        stack: { assets: true },
+      });
       if (!primaryAsset) {
         throw new BadRequestException('Asset not found for given stackParentId');
       }
@@ -272,9 +233,7 @@ export class AssetService {
     const { id, deleteOnDisk } = job;
 
     const asset = await this.assetRepository.getById(id, {
-      faces: {
-        person: true,
-      },
+      faces: { person: true },
       library: true,
       stack: { assets: true },
       exifInfo: true,
@@ -350,13 +309,9 @@ export class AssetService {
 
     const childIds: string[] = [];
     const oldParent = await this.assetRepository.getById(oldParentId, {
-      faces: {
-        person: true,
-      },
+      faces: { person: true },
       library: true,
-      stack: {
-        assets: true,
-      },
+      stack: { assets: true },
     });
     if (!oldParent?.stackId) {
       throw new Error('Asset not found or not in a stack');
