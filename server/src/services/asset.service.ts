@@ -40,7 +40,7 @@ import { IPartnerRepository } from 'src/interfaces/partner.interface';
 import { IStackRepository } from 'src/interfaces/stack.interface';
 import { ISystemMetadataRepository } from 'src/interfaces/system-metadata.interface';
 import { IUserRepository } from 'src/interfaces/user.interface';
-import { getMyPartnerIds } from 'src/utils/asset.util';
+import { getAssetFiles, getMyPartnerIds } from 'src/utils/asset.util';
 import { usePagination } from 'src/utils/pagination';
 
 export class AssetService {
@@ -72,9 +72,10 @@ export class AssetService {
     const userIds = [auth.user.id, ...partnerIds];
 
     const assets = await this.assetRepository.getByDayOfYear(userIds, dto);
+    const assetsWithThumbnails = assets.filter(({ files }) => !!getAssetFiles(files).thumbnailFile);
     const groups: Record<number, AssetEntity[]> = {};
     const currentYear = new Date().getFullYear();
-    for (const asset of assets) {
+    for (const asset of assetsWithThumbnails) {
       const yearsAgo = currentYear - asset.localDateTime.getFullYear();
       if (!groups[yearsAgo]) {
         groups[yearsAgo] = [];
@@ -127,6 +128,7 @@ export class AssetService {
             exifInfo: true,
           },
         },
+        files: true,
       },
       {
         faces: {
@@ -278,6 +280,7 @@ export class AssetService {
       library: true,
       stack: { assets: true },
       exifInfo: true,
+      files: true,
     });
 
     if (!asset) {
@@ -315,7 +318,8 @@ export class AssetService {
       }
     }
 
-    const files = [asset.thumbnailPath, asset.previewPath, asset.encodedVideoPath];
+    const { thumbnailFile, previewFile } = getAssetFiles(asset.files);
+    const files = [thumbnailFile?.path, previewFile?.path, asset.encodedVideoPath];
     if (deleteOnDisk) {
       files.push(asset.sidecarPath, asset.originalPath);
     }

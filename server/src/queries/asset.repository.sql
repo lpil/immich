@@ -9,8 +9,6 @@ SELECT
   "entity"."deviceId" AS "entity_deviceId",
   "entity"."type" AS "entity_type",
   "entity"."originalPath" AS "entity_originalPath",
-  "entity"."previewPath" AS "entity_previewPath",
-  "entity"."thumbnailPath" AS "entity_thumbnailPath",
   "entity"."thumbhash" AS "entity_thumbhash",
   "entity"."encodedVideoPath" AS "entity_encodedVideoPath",
   "entity"."createdAt" AS "entity_createdAt",
@@ -59,16 +57,24 @@ SELECT
   "exifInfo"."colorspace" AS "exifInfo_colorspace",
   "exifInfo"."bitsPerSample" AS "exifInfo_bitsPerSample",
   "exifInfo"."rating" AS "exifInfo_rating",
-  "exifInfo"."fps" AS "exifInfo_fps"
+  "exifInfo"."fps" AS "exifInfo_fps",
+  "files"."id" AS "files_id",
+  "files"."assetId" AS "files_assetId",
+  "files"."createdAt" AS "files_createdAt",
+  "files"."updatedAt" AS "files_updatedAt",
+  "files"."deletedAt" AS "files_deletedAt",
+  "files"."type" AS "files_type",
+  "files"."path" AS "files_path"
 FROM
   "assets" "entity"
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "entity"."id"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "entity"."id"
+  AND ("files"."deletedAt" IS NULL)
 WHERE
   (
     "entity"."ownerId" IN ($1)
     AND "entity"."isVisible" = true
     AND "entity"."isArchived" = false
-    AND "entity"."previewPath" IS NOT NULL
     AND EXTRACT(
       DAY
       FROM
@@ -93,8 +99,6 @@ SELECT
   "AssetEntity"."deviceId" AS "AssetEntity_deviceId",
   "AssetEntity"."type" AS "AssetEntity_type",
   "AssetEntity"."originalPath" AS "AssetEntity_originalPath",
-  "AssetEntity"."previewPath" AS "AssetEntity_previewPath",
-  "AssetEntity"."thumbnailPath" AS "AssetEntity_thumbnailPath",
   "AssetEntity"."thumbhash" AS "AssetEntity_thumbhash",
   "AssetEntity"."encodedVideoPath" AS "AssetEntity_encodedVideoPath",
   "AssetEntity"."createdAt" AS "AssetEntity_createdAt",
@@ -129,8 +133,6 @@ SELECT
   "AssetEntity"."deviceId" AS "AssetEntity_deviceId",
   "AssetEntity"."type" AS "AssetEntity_type",
   "AssetEntity"."originalPath" AS "AssetEntity_originalPath",
-  "AssetEntity"."previewPath" AS "AssetEntity_previewPath",
-  "AssetEntity"."thumbnailPath" AS "AssetEntity_thumbnailPath",
   "AssetEntity"."thumbhash" AS "AssetEntity_thumbhash",
   "AssetEntity"."encodedVideoPath" AS "AssetEntity_encodedVideoPath",
   "AssetEntity"."createdAt" AS "AssetEntity_createdAt",
@@ -216,8 +218,6 @@ SELECT
   "bd93d5747511a4dad4923546c51365bf1a803774"."deviceId" AS "bd93d5747511a4dad4923546c51365bf1a803774_deviceId",
   "bd93d5747511a4dad4923546c51365bf1a803774"."type" AS "bd93d5747511a4dad4923546c51365bf1a803774_type",
   "bd93d5747511a4dad4923546c51365bf1a803774"."originalPath" AS "bd93d5747511a4dad4923546c51365bf1a803774_originalPath",
-  "bd93d5747511a4dad4923546c51365bf1a803774"."previewPath" AS "bd93d5747511a4dad4923546c51365bf1a803774_previewPath",
-  "bd93d5747511a4dad4923546c51365bf1a803774"."thumbnailPath" AS "bd93d5747511a4dad4923546c51365bf1a803774_thumbnailPath",
   "bd93d5747511a4dad4923546c51365bf1a803774"."thumbhash" AS "bd93d5747511a4dad4923546c51365bf1a803774_thumbhash",
   "bd93d5747511a4dad4923546c51365bf1a803774"."encodedVideoPath" AS "bd93d5747511a4dad4923546c51365bf1a803774_encodedVideoPath",
   "bd93d5747511a4dad4923546c51365bf1a803774"."createdAt" AS "bd93d5747511a4dad4923546c51365bf1a803774_createdAt",
@@ -298,8 +298,6 @@ FROM
       "AssetEntity"."deviceId" AS "AssetEntity_deviceId",
       "AssetEntity"."type" AS "AssetEntity_type",
       "AssetEntity"."originalPath" AS "AssetEntity_originalPath",
-      "AssetEntity"."previewPath" AS "AssetEntity_previewPath",
-      "AssetEntity"."thumbnailPath" AS "AssetEntity_thumbnailPath",
       "AssetEntity"."thumbhash" AS "AssetEntity_thumbhash",
       "AssetEntity"."encodedVideoPath" AS "AssetEntity_encodedVideoPath",
       "AssetEntity"."createdAt" AS "AssetEntity_createdAt",
@@ -397,8 +395,6 @@ SELECT
   "AssetEntity"."deviceId" AS "AssetEntity_deviceId",
   "AssetEntity"."type" AS "AssetEntity_type",
   "AssetEntity"."originalPath" AS "AssetEntity_originalPath",
-  "AssetEntity"."previewPath" AS "AssetEntity_previewPath",
-  "AssetEntity"."thumbnailPath" AS "AssetEntity_thumbnailPath",
   "AssetEntity"."thumbhash" AS "AssetEntity_thumbhash",
   "AssetEntity"."encodedVideoPath" AS "AssetEntity_encodedVideoPath",
   "AssetEntity"."createdAt" AS "AssetEntity_createdAt",
@@ -452,8 +448,6 @@ SELECT
   "AssetEntity"."deviceId" AS "AssetEntity_deviceId",
   "AssetEntity"."type" AS "AssetEntity_type",
   "AssetEntity"."originalPath" AS "AssetEntity_originalPath",
-  "AssetEntity"."previewPath" AS "AssetEntity_previewPath",
-  "AssetEntity"."thumbnailPath" AS "AssetEntity_thumbnailPath",
   "AssetEntity"."thumbhash" AS "AssetEntity_thumbhash",
   "AssetEntity"."encodedVideoPath" AS "AssetEntity_encodedVideoPath",
   "AssetEntity"."createdAt" AS "AssetEntity_createdAt",
@@ -525,8 +519,6 @@ SELECT
   "AssetEntity"."deviceId" AS "AssetEntity_deviceId",
   "AssetEntity"."type" AS "AssetEntity_type",
   "AssetEntity"."originalPath" AS "AssetEntity_originalPath",
-  "AssetEntity"."previewPath" AS "AssetEntity_previewPath",
-  "AssetEntity"."thumbnailPath" AS "AssetEntity_thumbnailPath",
   "AssetEntity"."thumbhash" AS "AssetEntity_thumbhash",
   "AssetEntity"."encodedVideoPath" AS "AssetEntity_encodedVideoPath",
   "AssetEntity"."createdAt" AS "AssetEntity_createdAt",
@@ -581,8 +573,6 @@ SELECT
   "asset"."deviceId" AS "asset_deviceId",
   "asset"."type" AS "asset_type",
   "asset"."originalPath" AS "asset_originalPath",
-  "asset"."previewPath" AS "asset_previewPath",
-  "asset"."thumbnailPath" AS "asset_thumbnailPath",
   "asset"."thumbhash" AS "asset_thumbhash",
   "asset"."encodedVideoPath" AS "asset_encodedVideoPath",
   "asset"."createdAt" AS "asset_createdAt",
@@ -603,6 +593,13 @@ SELECT
   "asset"."sidecarPath" AS "asset_sidecarPath",
   "asset"."stackId" AS "asset_stackId",
   "asset"."duplicateId" AS "asset_duplicateId",
+  "files"."id" AS "files_id",
+  "files"."assetId" AS "files_assetId",
+  "files"."createdAt" AS "files_createdAt",
+  "files"."updatedAt" AS "files_updatedAt",
+  "files"."deletedAt" AS "files_deletedAt",
+  "files"."type" AS "files_type",
+  "files"."path" AS "files_path",
   "exifInfo"."assetId" AS "exifInfo_assetId",
   "exifInfo"."description" AS "exifInfo_description",
   "exifInfo"."exifImageWidth" AS "exifInfo_exifImageWidth",
@@ -642,8 +639,6 @@ SELECT
   "stackedAssets"."deviceId" AS "stackedAssets_deviceId",
   "stackedAssets"."type" AS "stackedAssets_type",
   "stackedAssets"."originalPath" AS "stackedAssets_originalPath",
-  "stackedAssets"."previewPath" AS "stackedAssets_previewPath",
-  "stackedAssets"."thumbnailPath" AS "stackedAssets_thumbnailPath",
   "stackedAssets"."thumbhash" AS "stackedAssets_thumbhash",
   "stackedAssets"."encodedVideoPath" AS "stackedAssets_encodedVideoPath",
   "stackedAssets"."createdAt" AS "stackedAssets_createdAt",
@@ -666,6 +661,8 @@ SELECT
   "stackedAssets"."duplicateId" AS "stackedAssets_duplicateId"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "asset"."id"
   LEFT JOIN "asset_stack" "stack" ON "stack"."id" = "asset"."stackId"
   LEFT JOIN "assets" "stackedAssets" ON "stackedAssets"."stackId" = "stack"."id"
@@ -692,6 +689,8 @@ SELECT
   )::timestamptz AS "timeBucket"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "asset"."id"
   LEFT JOIN "asset_stack" "stack" ON "stack"."id" = "asset"."stackId"
   LEFT JOIN "assets" "stackedAssets" ON "stackedAssets"."stackId" = "stack"."id"
@@ -723,8 +722,6 @@ SELECT
   "asset"."deviceId" AS "asset_deviceId",
   "asset"."type" AS "asset_type",
   "asset"."originalPath" AS "asset_originalPath",
-  "asset"."previewPath" AS "asset_previewPath",
-  "asset"."thumbnailPath" AS "asset_thumbnailPath",
   "asset"."thumbhash" AS "asset_thumbhash",
   "asset"."encodedVideoPath" AS "asset_encodedVideoPath",
   "asset"."createdAt" AS "asset_createdAt",
@@ -745,6 +742,13 @@ SELECT
   "asset"."sidecarPath" AS "asset_sidecarPath",
   "asset"."stackId" AS "asset_stackId",
   "asset"."duplicateId" AS "asset_duplicateId",
+  "files"."id" AS "files_id",
+  "files"."assetId" AS "files_assetId",
+  "files"."createdAt" AS "files_createdAt",
+  "files"."updatedAt" AS "files_updatedAt",
+  "files"."deletedAt" AS "files_deletedAt",
+  "files"."type" AS "files_type",
+  "files"."path" AS "files_path",
   "exifInfo"."assetId" AS "exifInfo_assetId",
   "exifInfo"."description" AS "exifInfo_description",
   "exifInfo"."exifImageWidth" AS "exifInfo_exifImageWidth",
@@ -784,8 +788,6 @@ SELECT
   "stackedAssets"."deviceId" AS "stackedAssets_deviceId",
   "stackedAssets"."type" AS "stackedAssets_type",
   "stackedAssets"."originalPath" AS "stackedAssets_originalPath",
-  "stackedAssets"."previewPath" AS "stackedAssets_previewPath",
-  "stackedAssets"."thumbnailPath" AS "stackedAssets_thumbnailPath",
   "stackedAssets"."thumbhash" AS "stackedAssets_thumbhash",
   "stackedAssets"."encodedVideoPath" AS "stackedAssets_encodedVideoPath",
   "stackedAssets"."createdAt" AS "stackedAssets_createdAt",
@@ -808,6 +810,8 @@ SELECT
   "stackedAssets"."duplicateId" AS "stackedAssets_duplicateId"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "asset"."id"
   LEFT JOIN "asset_stack" "stack" ON "stack"."id" = "asset"."stackId"
   LEFT JOIN "assets" "stackedAssets" ON "stackedAssets"."stackId" = "stack"."id"
@@ -841,8 +845,6 @@ SELECT
   "asset"."deviceId" AS "asset_deviceId",
   "asset"."type" AS "asset_type",
   "asset"."originalPath" AS "asset_originalPath",
-  "asset"."previewPath" AS "asset_previewPath",
-  "asset"."thumbnailPath" AS "asset_thumbnailPath",
   "asset"."thumbhash" AS "asset_thumbhash",
   "asset"."encodedVideoPath" AS "asset_encodedVideoPath",
   "asset"."createdAt" AS "asset_createdAt",
@@ -863,6 +865,13 @@ SELECT
   "asset"."sidecarPath" AS "asset_sidecarPath",
   "asset"."stackId" AS "asset_stackId",
   "asset"."duplicateId" AS "asset_duplicateId",
+  "files"."id" AS "files_id",
+  "files"."assetId" AS "files_assetId",
+  "files"."createdAt" AS "files_createdAt",
+  "files"."updatedAt" AS "files_updatedAt",
+  "files"."deletedAt" AS "files_deletedAt",
+  "files"."type" AS "files_type",
+  "files"."path" AS "files_path",
   "exifInfo"."assetId" AS "exifInfo_assetId",
   "exifInfo"."description" AS "exifInfo_description",
   "exifInfo"."exifImageWidth" AS "exifInfo_exifImageWidth",
@@ -902,8 +911,6 @@ SELECT
   "stackedAssets"."deviceId" AS "stackedAssets_deviceId",
   "stackedAssets"."type" AS "stackedAssets_type",
   "stackedAssets"."originalPath" AS "stackedAssets_originalPath",
-  "stackedAssets"."previewPath" AS "stackedAssets_previewPath",
-  "stackedAssets"."thumbnailPath" AS "stackedAssets_thumbnailPath",
   "stackedAssets"."thumbhash" AS "stackedAssets_thumbhash",
   "stackedAssets"."encodedVideoPath" AS "stackedAssets_encodedVideoPath",
   "stackedAssets"."createdAt" AS "stackedAssets_createdAt",
@@ -926,6 +933,8 @@ SELECT
   "stackedAssets"."duplicateId" AS "stackedAssets_duplicateId"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "asset"."id"
   LEFT JOIN "asset_stack" "stack" ON "stack"."id" = "asset"."stackId"
   LEFT JOIN "assets" "stackedAssets" ON "stackedAssets"."stackId" = "stack"."id"
@@ -957,6 +966,8 @@ SELECT DISTINCT
   c.city AS "value"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   INNER JOIN "exif" "e" ON "asset"."id" = e."assetId"
   INNER JOIN "cities" "c" ON c.city = "e"."city"
 WHERE
@@ -987,6 +998,8 @@ SELECT DISTINCT
   unnest("si"."tags") AS "value"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   INNER JOIN "smart_info" "si" ON "asset"."id" = si."assetId"
   INNER JOIN "random_tags" "t" ON "si"."tags" @> ARRAY[t.tag]
 WHERE
@@ -1009,8 +1022,6 @@ SELECT
   "asset"."deviceId" AS "asset_deviceId",
   "asset"."type" AS "asset_type",
   "asset"."originalPath" AS "asset_originalPath",
-  "asset"."previewPath" AS "asset_previewPath",
-  "asset"."thumbnailPath" AS "asset_thumbnailPath",
   "asset"."thumbhash" AS "asset_thumbhash",
   "asset"."encodedVideoPath" AS "asset_encodedVideoPath",
   "asset"."createdAt" AS "asset_createdAt",
@@ -1031,6 +1042,13 @@ SELECT
   "asset"."sidecarPath" AS "asset_sidecarPath",
   "asset"."stackId" AS "asset_stackId",
   "asset"."duplicateId" AS "asset_duplicateId",
+  "files"."id" AS "files_id",
+  "files"."assetId" AS "files_assetId",
+  "files"."createdAt" AS "files_createdAt",
+  "files"."updatedAt" AS "files_updatedAt",
+  "files"."deletedAt" AS "files_deletedAt",
+  "files"."type" AS "files_type",
+  "files"."path" AS "files_path",
   "exifInfo"."assetId" AS "exifInfo_assetId",
   "exifInfo"."description" AS "exifInfo_description",
   "exifInfo"."exifImageWidth" AS "exifInfo_exifImageWidth",
@@ -1065,6 +1083,8 @@ SELECT
   "stack"."primaryAssetId" AS "stack_primaryAssetId"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "asset"."id"
   LEFT JOIN "asset_stack" "stack" ON "stack"."id" = "asset"."stackId"
 WHERE
@@ -1086,8 +1106,6 @@ SELECT
   "asset"."deviceId" AS "asset_deviceId",
   "asset"."type" AS "asset_type",
   "asset"."originalPath" AS "asset_originalPath",
-  "asset"."previewPath" AS "asset_previewPath",
-  "asset"."thumbnailPath" AS "asset_thumbnailPath",
   "asset"."thumbhash" AS "asset_thumbhash",
   "asset"."encodedVideoPath" AS "asset_encodedVideoPath",
   "asset"."createdAt" AS "asset_createdAt",
@@ -1108,6 +1126,13 @@ SELECT
   "asset"."sidecarPath" AS "asset_sidecarPath",
   "asset"."stackId" AS "asset_stackId",
   "asset"."duplicateId" AS "asset_duplicateId",
+  "files"."id" AS "files_id",
+  "files"."assetId" AS "files_assetId",
+  "files"."createdAt" AS "files_createdAt",
+  "files"."updatedAt" AS "files_updatedAt",
+  "files"."deletedAt" AS "files_deletedAt",
+  "files"."type" AS "files_type",
+  "files"."path" AS "files_path",
   "exifInfo"."assetId" AS "exifInfo_assetId",
   "exifInfo"."description" AS "exifInfo_description",
   "exifInfo"."exifImageWidth" AS "exifInfo_exifImageWidth",
@@ -1142,9 +1167,37 @@ SELECT
   "stack"."primaryAssetId" AS "stack_primaryAssetId"
 FROM
   "assets" "asset"
+  LEFT JOIN "asset_files" "files" ON "files"."assetId" = "asset"."id"
+  AND ("files"."deletedAt" IS NULL)
   LEFT JOIN "exif" "exifInfo" ON "exifInfo"."assetId" = "asset"."id"
   LEFT JOIN "asset_stack" "stack" ON "stack"."id" = "asset"."stackId"
 WHERE
   "asset"."isVisible" = true
   AND "asset"."ownerId" IN ($1)
   AND "asset"."updatedAt" > $2
+
+-- AssetRepository.upsertFile
+INSERT INTO
+  "asset_files" (
+    "id",
+    "assetId",
+    "createdAt",
+    "updatedAt",
+    "deletedAt",
+    "type",
+    "path"
+  )
+VALUES
+  (DEFAULT, $1, DEFAULT, DEFAULT, DEFAULT, $2, $3)
+ON CONFLICT ("assetId", "type") DO
+UPDATE
+SET
+  "assetId" = EXCLUDED."assetId",
+  "type" = EXCLUDED."type",
+  "path" = EXCLUDED."path",
+  "updatedAt" = DEFAULT
+RETURNING
+  "id",
+  "createdAt",
+  "updatedAt",
+  "deletedAt"

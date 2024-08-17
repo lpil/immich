@@ -427,8 +427,8 @@ describe(AssetService.name, () => {
             name: JobName.DELETE_FILES,
             data: {
               files: [
-                assetWithFace.thumbnailPath,
-                assetWithFace.previewPath,
+                '/uploads/user-id/webp/path.ext',
+                '/uploads/user-id/thumbs/path.jpg',
                 assetWithFace.encodedVideoPath,
                 assetWithFace.sidecarPath,
                 assetWithFace.originalPath,
